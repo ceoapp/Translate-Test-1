@@ -1,0 +1,5 @@
+{
+  "name": "ThaiMinima Translator",
+  "description": "A minimalist, aesthetic English to Thai translation tool powered by Gemini AI.",
+  "requestFramePermissions": []
+}
