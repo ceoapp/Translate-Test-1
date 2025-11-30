@@ -39,14 +39,13 @@ function App() {
       const translated = await translateText(inputText);
       setOutputText(translated);
 
-      // Add to history
       const newRecord: TranslationRecord = {
         id: Date.now().toString(),
         original: inputText,
         translated: translated,
         timestamp: Date.now(),
       };
-      setHistory(prev => [newRecord, ...prev].slice(0, 10)); // Keep last 10
+      setHistory(prev => [newRecord, ...prev].slice(0, 10)); 
     } catch (error) {
       console.error(error);
       alert('Something went wrong. Please try again.');
@@ -79,7 +78,6 @@ function App() {
     setHistory([]);
   };
 
-  // Keyboard shortcut for translation (Cmd/Ctrl + Enter)
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       handleTranslate();
@@ -87,145 +85,144 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-primary-100 selection:text-primary-900 pb-20">
+    <div className="min-h-screen bg-white text-gray-700 font-sans selection:bg-primary-100 selection:text-primary-900 pb-20">
       
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-primary-50 rounded-lg text-primary-600">
-              <SparklesIcon size={20} />
+      <header className="fixed top-0 w-full z-20 bg-white/80 backdrop-blur-xl border-b border-gray-50">
+        <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-center w-8 h-8 bg-primary-50 rounded-lg text-primary-600">
+              <SparklesIcon size={18} />
             </div>
-            <h1 className="text-xl font-semibold tracking-tight text-gray-900">
+            <h1 className="text-lg font-semibold tracking-tight text-gray-900">
               Thai<span className="text-primary-600">Minima</span>
             </h1>
           </div>
-          <div className="text-xs font-medium text-gray-400 px-3 py-1 bg-gray-50 rounded-full border border-gray-100">
-            Powered by Gemini
+          <div className="flex items-center gap-2">
+             <span className="text-[10px] font-medium text-primary-400/80 px-2 py-1 bg-primary-50/50 rounded-md tracking-wide">
+                AI POWERED
+             </span>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 py-10">
+      <main className="max-w-3xl mx-auto px-6 pt-28 pb-12">
         
         {/* Main Translator Card */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-gray-100 border border-gray-100 overflow-hidden">
+        <div className="bg-white rounded-[2rem] shadow-soft border border-primary-100/30 overflow-hidden transition-shadow hover:shadow-glow duration-500">
           
-          {/* Language Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-50 bg-white">
-            <div className="flex items-center gap-4 w-full">
-              <span className="font-semibold text-gray-500 text-sm uppercase tracking-wider flex-1 text-center">English</span>
-              <div className="text-gray-300">
-                <ArrowRightIcon size={16} />
+          {/* Language Indicator */}
+          <div className="flex items-center justify-center py-4 bg-gradient-to-r from-white via-primary-50/30 to-white border-b border-primary-50/50">
+            <div className="flex items-center gap-6 text-sm font-medium">
+              <span className="text-gray-400">English</span>
+              <div className="text-primary-300">
+                <ArrowRightIcon size={14} />
               </div>
-              <span className="font-semibold text-primary-600 text-sm uppercase tracking-wider flex-1 text-center">Thai</span>
+              <span className="text-primary-600">Thai</span>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-gray-100 min-h-[300px]">
+          <div className="flex flex-col md:flex-row min-h-[320px]">
             
             {/* Input Section */}
-            <div className="flex-1 p-6 relative group">
+            <div className="flex-1 p-8 relative group">
               <textarea
                 ref={textareaRef}
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Type English text here..."
-                className="w-full h-full min-h-[200px] resize-none bg-transparent border-none focus:ring-0 text-lg text-gray-700 placeholder-gray-300 outline-none leading-relaxed"
+                placeholder="What would you like to translate?"
+                className="w-full h-full min-h-[200px] resize-none bg-transparent border-none focus:ring-0 text-xl text-gray-800 placeholder-gray-300 outline-none leading-relaxed font-light"
                 spellCheck="false"
               />
               
-              {inputText && (
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                   <Button variant="icon" onClick={handleClear} aria-label="Clear input">
+              <div className={`absolute top-6 right-6 transition-all duration-300 ${inputText ? 'opacity-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
+                   <button onClick={handleClear} className="p-2 text-gray-300 hover:text-primary-500 hover:bg-primary-50 rounded-full transition-colors">
                      <XIcon size={18} />
-                   </Button>
-                </div>
-              )}
+                   </button>
+              </div>
 
-              <div className="absolute bottom-6 right-6">
+              <div className="absolute bottom-8 left-8 right-8 md:right-auto">
                 <Button 
                   onClick={handleTranslate} 
                   isLoading={isLoading}
                   disabled={!inputText.trim()}
-                  className="rounded-full"
+                  className="w-full md:w-auto shadow-primary-200/50 hover:shadow-primary-300/50"
                 >
                   Translate
                 </Button>
               </div>
             </div>
 
+            {/* Divider */}
+            <div className="hidden md:block w-px bg-gradient-to-b from-transparent via-primary-100/50 to-transparent"></div>
+            <div className="md:hidden h-px bg-gradient-to-r from-transparent via-primary-100/50 to-transparent"></div>
+
             {/* Output Section */}
-            <div className="flex-1 p-6 bg-primary-50/30 relative flex flex-col">
+            <div className="flex-1 p-8 bg-primary-50/10 relative flex flex-col">
                {outputText ? (
                  <>
-                  <div className="flex-grow font-thai text-xl leading-relaxed text-gray-800 animate-fade-in">
+                  <div className="flex-grow font-thai text-xl leading-relaxed text-gray-800 animate-fade-in font-light">
                     {outputText}
                   </div>
-                  <div className="flex justify-end mt-4 pt-4 border-t border-primary-100/50">
+                  <div className="flex justify-end mt-6 pt-6 border-t border-primary-100/30">
                     <Button 
                       variant="secondary" 
                       onClick={handleCopy}
-                      className={`text-sm py-1.5 px-3 rounded-lg border-transparent shadow-sm ${isCopied ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-white'}`}
+                      className={`text-xs py-2 px-4 rounded-xl border-transparent ${isCopied ? 'bg-green-50 text-green-600' : 'bg-white shadow-sm text-gray-500 hover:text-primary-600'}`}
                     >
                       {isCopied ? (
-                        <span className="flex items-center gap-1.5"><CheckIcon size={16} /> Copied</span>
+                        <span className="flex items-center gap-1.5"><CheckIcon size={14} /> Copied</span>
                       ) : (
-                        <span className="flex items-center gap-1.5"><CopyIcon size={16} /> Copy</span>
+                        <span className="flex items-center gap-1.5"><CopyIcon size={14} /> Copy</span>
                       )}
                     </Button>
                   </div>
                  </>
                ) : (
-                 <div className="flex-grow flex flex-col items-center justify-center text-gray-300 gap-3 select-none">
-                    <div className="p-4 bg-white rounded-full shadow-sm">
-                      <SparklesIcon size={24} className="text-primary-200" />
+                 <div className="flex-grow flex flex-col items-center justify-center text-gray-300 gap-4 select-none">
+                    <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm">
+                      <SparklesIcon size={20} className="text-primary-200" />
                     </div>
-                    <p className="text-sm font-medium">Translation will appear here</p>
+                    <p className="text-sm font-light text-primary-200/70">Translation result</p>
                  </div>
                )}
             </div>
           </div>
         </div>
 
-        {/* Instructions / Tip */}
-        <div className="mt-4 flex justify-between items-center text-xs text-gray-400 px-2">
-           <p>Tip: Press <span className="font-mono bg-gray-100 px-1 py-0.5 rounded border border-gray-200">Cmd</span> + <span className="font-mono bg-gray-100 px-1 py-0.5 rounded border border-gray-200">Enter</span> to translate quickly.</p>
+        {/* Tip */}
+        <div className="mt-6 text-center">
+           <p className="text-[10px] text-gray-400 font-light">Press <span className="font-mono text-primary-400">Cmd/Ctrl + Enter</span> to translate</p>
         </div>
 
         {/* History Section */}
         {history.length > 0 && (
-          <div className="mt-16 animate-fade-in-up">
-            <div className="flex items-center justify-between mb-6 px-2">
-              <h2 className="text-lg font-semibold text-gray-800">Recent Translations</h2>
+          <div className="mt-20 animate-fade-in-up">
+            <div className="flex items-center justify-between mb-8 px-2">
+              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">History</h2>
               <button 
                 onClick={clearHistory}
-                className="text-xs font-medium text-gray-400 hover:text-red-500 flex items-center gap-1 transition-colors"
+                className="text-xs font-medium text-gray-300 hover:text-red-400 flex items-center gap-1.5 transition-colors group"
               >
-                <TrashIcon size={14} /> Clear History
+                <TrashIcon size={12} /> <span className="group-hover:underline decoration-red-200 underline-offset-2">Clear</span>
               </button>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
               {history.map((item) => (
                 <div 
                   key={item.id} 
                   onClick={() => loadHistoryItem(item)}
-                  className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary-200 cursor-pointer transition-all duration-200 group"
+                  className="group bg-white p-5 rounded-2xl border border-transparent hover:border-primary-100 hover:shadow-soft cursor-pointer transition-all duration-300 flex items-center justify-between gap-4"
                 >
-                  <div className="flex flex-col gap-2">
-                    <p className="text-gray-800 line-clamp-2 text-sm font-medium">{item.original}</p>
-                    <div className="w-full h-px bg-gray-50 my-1 group-hover:bg-primary-50 transition-colors" />
-                    <p className="text-primary-700 font-thai line-clamp-2 text-sm">{item.translated}</p>
+                  <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <p className="text-gray-600 text-sm font-light truncate">{item.original}</p>
+                    <div className="hidden md:block w-px h-4 bg-primary-100/50 justify-self-center"></div>
+                    <p className="text-primary-700 font-thai text-sm truncate">{item.translated}</p>
                   </div>
-                  <div className="mt-3 flex justify-between items-center">
-                    <span className="text-[10px] text-gray-400">
-                      {new Date(item.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                    <span className="opacity-0 group-hover:opacity-100 text-[10px] font-bold text-primary-400 uppercase tracking-wide transition-opacity">
-                      Restore
-                    </span>
+                  <div className="text-primary-200 opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-2 group-hover:translate-x-0">
+                    <ArrowRightIcon size={16} />
                   </div>
                 </div>
               ))}
@@ -236,18 +233,18 @@ function App() {
 
       <style>{`
         @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from { opacity: 0; transform: translateY(4px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
-          animation: fade-in 0.3s ease-in-out;
+          animation: fade-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
         @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(10px); }
+          from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in-up {
-          animation: fade-in-up 0.4s ease-out;
+          animation: fade-in-up 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
       `}</style>
     </div>
