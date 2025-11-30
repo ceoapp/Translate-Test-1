@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { translateText } from './services/geminiService';
-import { SparklesIcon, ArrowRightIcon, CopyIcon, CheckIcon, XIcon, TrashIcon } from './components/Icons';
+import { SparklesIcon, ArrowRightIcon, CopyIcon, CheckIcon, XIcon, TrashIcon, AlertCircleIcon } from './components/Icons';
 import Button from './components/Button';
 import { TranslationRecord } from './types';
 
@@ -9,6 +9,7 @@ function App() {
   const [outputText, setOutputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<TranslationRecord[]>(() => {
     try {
       const saved = localStorage.getItem('translationHistory');
@@ -31,10 +32,16 @@ function App() {
     localStorage.setItem('translationHistory', JSON.stringify(history));
   }, [history]);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInputText(e.target.value);
+    if (error) setError(null); // Clear error when typing
+  };
+
   const handleTranslate = async () => {
     if (!inputText.trim()) return;
 
     setIsLoading(true);
+    setError(null);
     try {
       const translated = await translateText(inputText);
       setOutputText(translated);
@@ -46,9 +53,9 @@ function App() {
         timestamp: Date.now(),
       };
       setHistory(prev => [newRecord, ...prev].slice(0, 10)); 
-    } catch (error) {
-      console.error(error);
-      alert('Something went wrong. Please try again.');
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -64,6 +71,7 @@ function App() {
   const handleClear = () => {
     setInputText('');
     setOutputText('');
+    setError(null);
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
@@ -72,6 +80,7 @@ function App() {
   const loadHistoryItem = (item: TranslationRecord) => {
     setInputText(item.original);
     setOutputText(item.translated);
+    setError(null);
   };
 
   const clearHistory = () => {
@@ -129,7 +138,7 @@ function App() {
               <textarea
                 ref={textareaRef}
                 value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
+                onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 placeholder="What would you like to translate?"
                 className="w-full h-full min-h-[200px] resize-none bg-transparent border-none focus:ring-0 text-xl text-gray-800 placeholder-gray-300 outline-none leading-relaxed font-light"
@@ -142,7 +151,7 @@ function App() {
                    </button>
               </div>
 
-              <div className="absolute bottom-8 left-8 right-8 md:right-auto">
+              <div className="absolute bottom-8 left-8 right-8 md:right-auto z-10">
                 <Button 
                   onClick={handleTranslate} 
                   isLoading={isLoading}
@@ -151,6 +160,16 @@ function App() {
                 >
                   Translate
                 </Button>
+                
+                {/* Error Message Display */}
+                {error && (
+                  <div className="absolute top-full left-0 mt-3 w-full md:w-[200%] md:max-w-md animate-fade-in z-20">
+                     <div className="flex items-start gap-2 text-red-500 bg-red-50/80 backdrop-blur-sm p-3 rounded-xl text-xs font-medium border border-red-100">
+                        <AlertCircleIcon size={16} className="shrink-0 mt-0.5" />
+                        <span>{error}</span>
+                     </div>
+                  </div>
+                )}
               </div>
             </div>
 
